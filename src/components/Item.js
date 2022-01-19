@@ -160,7 +160,7 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
                         subheader={mediaObj["date"]}
                     />
                     {med}
-                    {mediaObj.hasOwnProperty("copyright") ? <Typography variant="caption" sx={{ fontStyle: "italic" }}>&copy; {mediaObj["copyright"]}</Typography> : null}
+                    {mediaObj.hasOwnProperty("copyright") ? <Typography variant="caption" sx={{ fontStyle: "italic", marginLeft:"1rem" }}>&copy; {mediaObj["copyright"]}</Typography> : null}
                     <Collapse
                         in={!collapsed}
                         timeout="auto"
@@ -178,7 +178,8 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
                 <CardActions sx={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    gap: 2
+                    gap: 2,
+                    marginRight:"1rem"
                 }}>
                     <Button variant="outlined" onClick={handleLike}>
 

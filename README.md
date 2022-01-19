@@ -31,3 +31,8 @@ microservice that fetches from NASA's apod API and displays the resulting astron
 - fix missing key in jsx list
 - TODO: theme
 - TODO: background
+- TODO: fix flavicon link 
+
+## Jan 19 2022 v0.5.0 MVP
+- background
+- fix spacing in <Item />

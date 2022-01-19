@@ -1,3 +1,21 @@
+body::before {
+    content:'';
+    display:block;
+    position:fixed;
+    top:-3px;
+    left:-3px;
+    width:103%;
+    height:103%;
+    z-index:-1;
+    background-color: rgb(25, 25, 26);
+    background-image:url(https://sm.mashable.com/t/mashable_in/photo/default/nasa-galaxy_9pu4.2496.jpg);
+    background-size:cover;
+    filter:blur(3px) grayscale(50%) brightness(50%);
+    opacity:100%;
+    overflow:hidden;
+}
+
+
 .datePicker{
     
     &-lg{

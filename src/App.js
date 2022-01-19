@@ -209,7 +209,7 @@ const App=()=>{
         <div className="app">
             {renderDialogs()}
             <div className={`datePicker-${isLarge?"lg":"sm"}`}>
-                <Typography variant="h2" align="center">SpaceStagram!</Typography>
+                <Typography variant="h2" align="center" sx={{color:"white"}}>SpaceStagram!</Typography>
                 <DateRangePicker
                     ranges={[range]}
                     onChange={handleSelection}
