@@ -18,3 +18,16 @@ microservice that fetches from NASA's apod API and displays the resulting astron
 - fade in/out loading animation
 - render only when in viewport
 - TODO: warning message
+
+## Jan 19 2022 v0.4.1
+- warning message
+- fix out of viewport resulting in never loading item
+- fix fast scroll results in render unmount error
+- TODO: style/theme
+
+## Jan 19 2022 v0.4.2
+- style
+- add title
+- fix missing key in jsx list
+- TODO: theme
+- TODO: background

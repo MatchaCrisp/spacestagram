@@ -34,11 +34,19 @@ above is MVP
 how to deal with copyright imgs??
 
 TODO: 
- - load a bunch at a time
- - load based on date picker
- - load between date range
+ - ~~load a bunch at a time~~
+ - ~~load based on date picker~~
+ - ~~load between date range~~
  - animated like button
- - loading state/transition to loaded
- - transitions for description
+ - ~~loading state/transition to loaded~~
+ - ~~transitions for description~~
  - make the MVP version into embed for any website maybe?
  - pick consistent theme
+ 
+
+ look:
+ desktop:
+ fixed datepicker on left, img on right
+
+ smaller devices: (<1000px):
+ datepicker up top, img on bottom

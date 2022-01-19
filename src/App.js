@@ -1,12 +1,20 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import Item from './components/Item';
 import Fader from './components/Fader';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 // date range picker
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 
+import './stylesheets/App.scss';
 // TODO: figure out intuitive way to store dates and const dates
 const App=()=>{
     // constants
@@ -16,6 +24,9 @@ const App=()=>{
     const MAX_DATE=new Date(Date.now());
     const MIN_DATE_MS=MIN_DATE.getTime();
     const MAX_DATE_MS=MAX_DATE.getTime();
+
+    // media query breakpoint
+    const isLarge=useMediaQuery('(min-width:1200px)');
 
     // user date range selection
     const [range, setRange]=useState({
@@ -31,6 +42,30 @@ const App=()=>{
         key: 'selection',
     });
 
+    // dialogue open state
+    const [warn,setWarn]=useState(false);
+
+    const warnFunc={
+        open:()=>setWarn(true),
+        close:()=>setWarn(false)
+    }
+
+    const [err,setErr]=useState(false);
+
+    const errFunc={
+        open:()=>setErr(true),
+        close:()=>setErr(false)
+    }
+    const [conf,setConf]=useState(false);
+    const confFunc={
+        open:()=>setConf(true),
+        close:(action)=>{
+            if (action){
+                setDates(range);
+            }   
+            setConf(false);
+        }
+    }
     // used by range picker
     const handleSelection=(r)=>{
         if (r.selection.endDate>MAX_DATE){
@@ -41,11 +76,23 @@ const App=()=>{
 
     // confirms user selection to dates for display
     const handleSubmit=()=>{
-        if (range.startDate.getTime()<MIN_DATE_MS || range.endDate.getTime()>MAX_DATE_MS){
-            return;
-        }
+        const sd=range.startDate.getTime();
+        const ed=range.endDate.getTime();
+        const nDays=(ed-sd)/DAY_MS+1;
 
-        setDates(range);
+        if (sd<MIN_DATE_MS || ed>MAX_DATE_MS){
+            errFunc.open();
+        }
+        else if (nDays>=60){
+            warnFunc.open();
+        }
+        else if (nDays>=20){
+            confFunc.open();
+        }
+        else {
+            setDates(range);
+        }
+        
     }
 
     // converts date str to nasa api url
@@ -69,15 +116,77 @@ const App=()=>{
 
         return null;
     }
+
+    const renderDialog = (open, {title, msg, handleClose, butt1, butt2}, key) => {
+        return (
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                key={key}
+            >
+                <DialogTitle>
+                    {title}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {msg}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    {butt1}
+                    {butt2}
+                </DialogActions>
+            </Dialog>
+        )
+    }
+
+    const renderDialogs=()=>{
+        const warnItem={
+            title:"It's not you! It's us!",
+            msg:"This many requests can exceed our API request limit to NASA quickly, would you mind maybe viewing less at a time? Thanks!",
+            handleClose:warnFunc.close,
+            butt1:null,
+            butt2:<Button variant="outlined" onClick={warnFunc.close} autoFocus>Okay!</Button>
+        };
+
+        const errItem={
+            title:"Oops!",
+            msg:"You tried to view a picture that's either earlier than 1995-06-16 or in the future! (How did you do that?)",
+            handleClose:errFunc.close,
+            butt1:null,
+            butt2:<Button variant="outlined" onClick={errFunc.close} autoFocus>Try again.</Button>
+        };
+
+        const confItem={
+            title:"Hold on!",
+            msg:"You are trying to view a whole lotta images at the same time there, you sure this is what you want?",
+            handleClose:()=>confFunc.close(false),
+            butt1:<Button variant="contained" onClick={()=>confFunc.close(true)}>I'm sure!</Button>,
+            butt2:<Button variant="outlined" onClick={()=>confFunc.close(false)} autoFocus>Take me back.</Button>
+        }
+
+        return (
+            <div>
+                {renderDialog(warn, warnItem,"warning")}
+                {renderDialog(err, errItem,"error")}
+                {renderDialog(conf, confItem,"confirmation")}
+            </div>
+        )
+    }
     const renderContent=()=>{
-        console.log(dates.startDate,dates.endDate);
+
         const sd=dates.startDate.getTime();
         const ed=dates.endDate.getTime();
-        console.log(sd,ed);
+
         if (sd===ed){
+            const url=genUrl(genDateStr(dates.startDate));
+
+            if (url===null){
+                return null;
+            }
             return (
                     <Fader visible={true}>
-                        <Item url={genUrl(genDateStr(dates.startDate))} 
+                        <Item url={url} 
                         isSingle={true} />
                     </Fader>
             )
@@ -87,14 +196,20 @@ const App=()=>{
 
             for (let currDms=sd;currDms<=ed;currDms+=DAY_MS){
                 const currD=new Date(currDms);
-                jsx.push(<Fader visible={true}><Item url={genUrl(genDateStr(currD))} key={currD} isSingle={false} /></Fader>);
+                const url=genUrl(genDateStr(currD));
+                if (url != null){
+                    jsx.push(<Fader visible={true} key={currD}><Item url={genUrl(genDateStr(currD))}  isSingle={false} /></Fader>);
+                }
+                
             }
             return jsx;
         }
     }
     return (
-        <div>
-            <div className="datePicker">
+        <div className="app">
+            {renderDialogs()}
+            <div className={`datePicker-${isLarge?"lg":"sm"}`}>
+                <Typography variant="h2" align="center">SpaceStagram!</Typography>
                 <DateRangePicker
                     ranges={[range]}
                     onChange={handleSelection}
@@ -106,7 +221,7 @@ const App=()=>{
                     View Selection!
                 </Button>
             </div>
-            <div>
+            <div className={`content-${isLarge?"lg":"sm"}`}>
                 {renderContent()}
             </div>
         </div>

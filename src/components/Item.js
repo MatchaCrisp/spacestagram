@@ -34,13 +34,14 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
     const {inViewport,}=useInViewport(myRef);
     // save url as state to force rerender
     const [fetchUrl,setFetchUrl]=useState(url);
+    
     // saves a copy of json sent by NASA
     const [mediaObj, setMediaObj] = useState(null);
 
     // becomes false when media_type is image and is loaded OR
     // when media_type is video
     const [loading, setLoading] = useState(true);
-
+    const [inv,setInv]=useState(false);
     // hides text explanation to reduce clutter when true
     const [collapsed, setCollapsed] = useState(true);
 
@@ -59,17 +60,23 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
         setLiked(!liked);
     }
 
+    useEffect(()=>{
+        if (inViewport){
+            setInv(true);
+        }
+    },[inViewport])
     useEffect(() => {
-        if (url === "" || !inViewport) {
+        if (url === "" || !inv) {
             return;
         }
         setLoading(true);
         fetch(url)
             .then(data => {
+
                 if (data.status == 429){
                     throw Error("too many requests!");
                 }
-                data.json()
+                return data.json();
             })
             .then(media => {
                 /*
@@ -92,10 +99,10 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
                 handleMediaLoaded();
             });
         
-    },[fetchUrl,inViewport]);
+    },[fetchUrl,inv]);
 
     
-    const renderSz=()=>{
+    const styleSz=()=>{
         if (isSingle){
             return ({
                     maxWidth: 800,
@@ -153,7 +160,7 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
                         subheader={mediaObj["date"]}
                     />
                     {med}
-                    {mediaObj.hasOwnProperty("copyright") ? <Typography variant="caption" sx={{ fontStyle: "italic" }}>{mediaObj["copyright"]}</Typography> : null}
+                    {mediaObj.hasOwnProperty("copyright") ? <Typography variant="caption" sx={{ fontStyle: "italic" }}>&copy; {mediaObj["copyright"]}</Typography> : null}
                     <Collapse
                         in={!collapsed}
                         timeout="auto"
@@ -188,7 +195,7 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
         )
     }
     return (
-        <Card sx={renderSz()} ref={myRef}>
+        <Card sx={styleSz()} ref={myRef}>
             <div style={{
                 display: loading ? "flex" : "none",
                 marginTop: "10rem",
