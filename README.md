@@ -13,3 +13,8 @@ microservice that fetches from NASA's apod API and displays the resulting astron
 - TODO: warning message when too many picked / cap message when way over max
 - TODO: fade in loader
 - TODO: render only when in viewport
+
+## Jan 19 2022 v0.3.0
+- fade in/out loading animation
+- render only when in viewport
+- TODO: warning message

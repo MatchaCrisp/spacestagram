@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Item from './components/Item';
+import Fader from './components/Fader';
 import Button from '@mui/material/Button';
 // date range picker
 import 'react-date-range/dist/styles.css'; // main style file
@@ -75,8 +76,10 @@ const App=()=>{
         console.log(sd,ed);
         if (sd===ed){
             return (
-                    <Item url={genUrl(genDateStr(dates.startDate))} 
+                    <Fader visible={true}>
+                        <Item url={genUrl(genDateStr(dates.startDate))} 
                         isSingle={true} />
+                    </Fader>
             )
         }
         else {
@@ -84,7 +87,7 @@ const App=()=>{
 
             for (let currDms=sd;currDms<=ed;currDms+=DAY_MS){
                 const currD=new Date(currDms);
-                jsx.push(<Item url={genUrl(genDateStr(currD))} key={currD} isSingle={false} />);
+                jsx.push(<Fader visible={true}><Item url={genUrl(genDateStr(currD))} key={currD} isSingle={false} /></Fader>);
             }
             return jsx;
         }

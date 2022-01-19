@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -16,6 +16,8 @@ import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 
 import '../stylesheets/Item.scss';
+
+import {useInViewport} from 'react-in-viewport';
 /* given nasa url to fetch from
    render interactive mui component that displays:
     - title on top
@@ -28,7 +30,8 @@ import '../stylesheets/Item.scss';
     TODO: different sizes based on prop 
  */
 const Item = ({ url,isSingle,handleInc, handleDec }) => {
-
+    const myRef=useRef();
+    const {inViewport,}=useInViewport(myRef);
     // save url as state to force rerender
     const [fetchUrl,setFetchUrl]=useState(url);
     // saves a copy of json sent by NASA
@@ -57,7 +60,7 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
     }
 
     useEffect(() => {
-        if (url === "") {
+        if (url === "" || !inViewport) {
             return;
         }
         setLoading(true);
@@ -89,7 +92,7 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
                 handleMediaLoaded();
             });
         
-    },[fetchUrl]);
+    },[fetchUrl,inViewport]);
 
     
     const renderSz=()=>{
@@ -111,7 +114,7 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
     const renderMedia = () => {
         if (mediaObj === null) {
             return (
-                <Typography align="center" sx={{ display: loading ? "none" : "block" }}>
+                <Typography align="center" sx={{ display: loading ? "none" : "block", marginTop:10 }}>
                     Oops! Something went wrong!
                 </Typography>);
         }
@@ -185,7 +188,7 @@ const Item = ({ url,isSingle,handleInc, handleDec }) => {
         )
     }
     return (
-        <Card sx={renderSz()}>
+        <Card sx={renderSz()} ref={myRef}>
             <div style={{
                 display: loading ? "flex" : "none",
                 marginTop: "10rem",
