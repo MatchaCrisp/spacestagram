@@ -1,0 +1,21 @@
+@keyframes in {
+    0% {
+        top:5px;
+        opacity:0;
+    }
+    100%{
+        top:0px;
+        opacity:1;
+    }
+}
+
+@keyframes out {
+    0% {
+        top:0px;
+        opacity:1;
+    }
+    100%{
+        top:5px;
+        opacity:0;
+    }
+}

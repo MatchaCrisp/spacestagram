@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -16,6 +16,8 @@ import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 
 import '../stylesheets/Item.scss';
+
+import {useInViewport} from 'react-in-viewport';
 /* given nasa url to fetch from
    render interactive mui component that displays:
     - title on top
@@ -27,14 +29,19 @@ import '../stylesheets/Item.scss';
     TODO: animated like/tweet button
     TODO: different sizes based on prop 
  */
-const Item = ({ url }) => {
+const Item = ({ url,isSingle,handleInc, handleDec }) => {
+    const myRef=useRef();
+    const {inViewport,}=useInViewport(myRef);
+    // save url as state to force rerender
+    const [fetchUrl,setFetchUrl]=useState(url);
+    
     // saves a copy of json sent by NASA
     const [mediaObj, setMediaObj] = useState(null);
 
     // becomes false when media_type is image and is loaded OR
     // when media_type is video
     const [loading, setLoading] = useState(true);
-
+    const [inv,setInv]=useState(false);
     // hides text explanation to reduce clutter when true
     const [collapsed, setCollapsed] = useState(true);
 
@@ -53,14 +60,25 @@ const Item = ({ url }) => {
         setLiked(!liked);
     }
 
+    useEffect(()=>{
+        if (inViewport){
+            setInv(true);
+        }
+    },[inViewport])
     useEffect(() => {
-        if (url === "") {
+        if (url === "" || !inv) {
             return;
         }
+        setLoading(true);
         fetch(url)
-            .then(data => data.json())
+            .then(data => {
+
+                if (data.status == 429){
+                    throw Error("too many requests!");
+                }
+                return data.json();
+            })
             .then(media => {
-                console.log(media);
                 /*
                     media={
                         date:str
@@ -80,16 +98,34 @@ const Item = ({ url }) => {
                 console.log(e);
                 handleMediaLoaded();
             });
-    }, []);
+        
+    },[fetchUrl,inv]);
 
+    
+    const styleSz=()=>{
+        if (isSingle){
+            return ({
+                    maxWidth: 800,
+                    minWidth: 340,
+                    minHeight: 400
+                });
+            
+        }
+        else{
+            return ({
+                width:400,
+                minHeight:200
+            });
+        }
+    }
     const renderMedia = () => {
         if (mediaObj === null) {
             return (
-                <Typography sx={{ display: loading ? "none" : "block" }}>
+                <Typography align="center" sx={{ display: loading ? "none" : "block", marginTop:10 }}>
                     Oops! Something went wrong!
                 </Typography>);
         }
-        const url = mediaObj.hasOwnProperty("hdurl") ? mediaObj["hdurl"] : mediaObj["url"];
+        const url = mediaObj.hasOwnProperty("hdurl")&&isSingle ? mediaObj["hdurl"] : mediaObj["url"];
         const tweetUrl = `https://twitter.com/intent/tweet?hashtags=nasa,space&text=${encodeURIComponent("Wow! Look at this picture posted by NASA's Astronomy Picture of the Day! " + url)}`;
         let med = null;
         if (mediaObj["media_type"] === "video") {
@@ -115,6 +151,7 @@ const Item = ({ url }) => {
         else {
             med = <Typography>Unrecognized media type!</Typography>
         }
+
         return (
             <div style={{ display: loading ? "none" : "block" }}>
                 <CardActionArea onClick={handleCollapse}>
@@ -123,7 +160,7 @@ const Item = ({ url }) => {
                         subheader={mediaObj["date"]}
                     />
                     {med}
-                    {mediaObj.hasOwnProperty("copyright") ? <Typography variant="caption" sx={{ fontStyle: "italic" }}>{mediaObj["copyright"]}</Typography> : null}
+                    {mediaObj.hasOwnProperty("copyright") ? <Typography variant="caption" sx={{ fontStyle: "italic", marginLeft:"1rem" }}>&copy; {mediaObj["copyright"]}</Typography> : null}
                     <Collapse
                         in={!collapsed}
                         timeout="auto"
@@ -141,7 +178,8 @@ const Item = ({ url }) => {
                 <CardActions sx={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    gap: 2
+                    gap: 2,
+                    marginRight:"1rem"
                 }}>
                     <Button variant="outlined" onClick={handleLike}>
 
@@ -158,11 +196,7 @@ const Item = ({ url }) => {
         )
     }
     return (
-        <Card sx={{
-            maxWidth: 800,
-            minWidth: 340,
-            minHeight: 400
-        }}>
+        <Card sx={styleSz()} ref={myRef}>
             <div style={{
                 display: loading ? "flex" : "none",
                 marginTop: "10rem",
