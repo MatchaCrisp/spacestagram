@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Output when given various input 1`] = `
+<div>
+  <div
+    style={
+      Object {
+        "display": "block",
+      }
+    }
+  />
+</div>
+`;

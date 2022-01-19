@@ -1,0 +1,47 @@
+{
+  "name": "spacestagram",
+  "version": "0.1.0",
+  "description": "Small microservice that fetches astronomy pictures/videos from the nasa/apod API and displays them in browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "webpack serve --config webpack.config.js",
+    "lint": "eslint .  --ext .js"
+  },
+  "keywords": [
+    "NASA"
+  ],
+  "author": "Junyan Ye",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.16.5",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-react": "^7.16.7",
+    "babel-jest": "^27.4.6",
+    "babel-loader": "^8.2.3",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^6.5.1",
+    "dotenv-webpack": "^7.0.3",
+    "eslint": "^8.7.0",
+    "eslint-plugin-react": "^7.28.0",
+    "html-webpack-plugin": "^5.5.0",
+    "jest": "^27.4.7",
+    "react-test-renderer": "^17.0.2",
+    "sass": "^1.48.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.66.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.7.3"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.3.0",
+    "@mui/material": "^5.3.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "sass-loader": "^12.4.0"
+  }
+}
